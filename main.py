@@ -1,16 +1,33 @@
-# This is a sample Python script.
-
-# Press Maj+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from pathlib import Path
+import PySimpleGUI as sg
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+# Remove empty folders
+def remove_empty_folders(path: Path):
+    for folder in path.rglob("*"):
+        if folder.is_dir():
+            try:
+                folder.rmdir()
+            except OSError:
+                print(f"{folder} is not empty")
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+def main():
+    layout = [
+        [sg.Text("Enter folder path:")],
+        [sg.InputText(), sg.FolderBrowse(key="-BROWSE-")],
+        [sg.Button("Remove empty folders"), sg.Button("Exit")]
+    ]
+    window = sg.Window("Remove empty folders", layout)
+    while True:
+        event, values = window.read()
+        if event in [sg.WIN_CLOSED, "Exit"]:
+            break
+        elif event == "Remove empty folders":
+            path = Path(values["-BROWSE-"])
+            remove_empty_folders(path)
+    window.close()
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+if __name__ == "__main__":
+    main()
